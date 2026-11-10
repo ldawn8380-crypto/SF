@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sermon Feedback</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap">
+<style>
+:root{
+  --bg:#FFFFFF;--surface:#F8F7F5;--s2:#F0EDE8;
+  --text:#0F1B2D;--muted:#6B7280;--light:#9CA3AF;
+  --border:rgba(15,27,45,.10);--bd:rgba(15,27,45,.18);--hover:#F3F0EB;
+  --navy:#0F1B2D;--navy2:#1E3A5F;--nbg:rgba(15,27,45,.06);
+  --bronze:#8B6914;--bronze2:#C4940A;--bbg:rgba(139,105,20,.10);
+  --green:#166534;--gbg:#DCFCE7;--amber:#9A3412;--abg:#FFF7ED;
+  --red:#991B1B;--rbg:#FEE2E2;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;height:100vh;overflow:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:10px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,27,45,.55);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.modal{background:#fff;border-radius:12px;padding:32px;width:420px;max-width:calc(100vw - 40px);box-shadow:0 20px 60px rgba(15,27,45,.18)}
+.modal-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+.mfg{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+.mfg label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.mfg input,.mfg select{background:var(--surface);border:1.5px solid var(--border);border-radius:5px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color .15s;width:100%}
+.mfg input:focus,.mfg select:focus{border-color:var(--bronze)}
+.mfg input::placeholder{color:var(--light)}
+.modal-foot{display:flex;gap:10px;margin-top:8px}
+
+/* BUTTONS */
+.btn{padding:8px 16px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:5px;letter-spacing:.02em}
+.btn-p{background:var(--navy);color:#fff}.btn-p:hover{background:var(--navy2)}
+.btn-ghost{background:transparent;color:var(--muted);padding:8px 0}.btn-ghost:hover{color:var(--text)}
+.btn-s{background:transparent;border:1.5px solid var(--bd);color:var(--text)}.btn-s:hover{background:var(--hover)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn:disabled{opacity:.4;cursor:default}
+.link-btn{background:none;border:none;font-family:'Inter',sans-serif;cursor:pointer;color:var(--bronze);font-size:11px;font-weight:600;padding:0;text-decoration:none}.link-btn:hover{text-decoration:underline}
+
+/* LAYOUT */
+#app{display:flex;flex-direction:column;height:100vh}
+.hd{height:52px;min-height:52px;background:var(--bg);border-bottom:1.5px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px}
+.logo{width:26px;height:26px;background:var(--navy);border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff;flex-shrink:0}
+.brand{font-size:13px;font-weight:700;color:var(--navy);letter-spacing:.03em;flex-shrink:0}
+.sep{width:1px;height:16px;background:var(--border)}
+.hd-info{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--muted)}
+.hd-info b{color:var(--text)}
+.gbadge{padding:3px 12px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.04em;transition:all .3s;flex-shrink:0}
+.ga{background:var(--gbg);color:var(--green)}.gb{background:var(--bbg);color:var(--bronze)}
+.gc{background:var(--abg);color:var(--amber)}.gd{background:var(--rbg);color:var(--red)}.gn{background:var(--nbg);color:var(--muted)}
+.body{flex:1;display:flex;overflow:hidden}
+
+/* LEFT PANEL */
+.left-panel{width:300px;min-width:300px;background:var(--surface);border-right:1.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.profile-card{padding:16px 18px 14px;border-bottom:1.5px solid var(--border)}
+.pc-avatar{width:38px;height:38px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--bronze2);margin-bottom:8px;flex-shrink:0}
+.pc-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:1px}
+.pc-role{font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.4}
+.pc-stats{display:flex;gap:14px;margin-bottom:8px}
+.pc-stat-val{font-size:16px;font-weight:700;color:var(--navy);font-family:'Playfair Display',serif;display:block}
+.pc-stat-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:block}
+.pc-edit{font-size:11px;font-weight:600;color:var(--bronze);cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;padding:0}
+.pc-edit:hover{text-decoration:underline}
+.lp-nav{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-bottom:1.5px solid var(--border)}
+.lp-btn{width:100%;text-align:left;padding:8px 10px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .15s;background:transparent;color:var(--navy)}
+.lp-btn:hover{background:var(--hover)}.lp-btn.active{background:var(--navy);color:#fff}
+.history-hd{padding:10px 18px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.10em;color:var(--muted)}
+.history-list{flex:1;overflow-y:auto;padding-bottom:8px}
+.h-item{padding:9px 14px;cursor:pointer;border-bottom:1px solid rgba(15,27,45,.05);transition:background .1s;display:flex;align-items:flex-start;gap:8px}
+.h-item:hover{background:var(--hover)}.h-item.active{background:#fff;border-right:2px solid var(--bronze)}
+.h-item-body{flex:1;min-width:0}
+.h-title{font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px}
+.h-meta{font-size:10px;color:var(--muted)}
+.gpill{padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:.04em;white-space:nowrap;display:inline-block}
+.gpa{background:var(--gbg);color:var(--green)}.gpb{background:var(--bbg);color:var(--bronze)}
+.gpc{background:var(--abg);color:var(--amber)}.gpd{background:var(--rbg);color:var(--red)}.gpn{background:var(--nbg);color:var(--muted)}
+.h-empty{padding:20px 18px;text-align:center;color:var(--light);font-size:12px;line-height:1.6}
+
+/* RIGHT PANEL */
+.right-panel{flex:1;overflow-y:auto;display:flex;flex-direction:column;background:var(--bg)}
+
+/* ANALYZE FORM */
+.analyze-view{padding:28px 40px;max-width:660px;width:100%}
+.av-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.av-sub{font-size:12px;color:var(--muted);margin-bottom:22px}
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.fg label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.fg input,.fg textarea{background:#fff;border:1.5px solid var(--border);border-radius:5px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:8px 12px;outline:none;transition:border-color .15s;resize:none;width:100%}
+.fg input:focus,.fg textarea:focus{border-color:var(--bronze)}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--light)}
+.fg textarea{line-height:1.6}
+.frow{display:flex;gap:10px}.frow .fg{flex:1}
+.tx-area{min-height:160px;font-size:12px;line-height:1.6}
+.section-divider{font-size:9px;font-weight:700;color:var(--bronze);text-transform:uppercase;letter-spacing:.12em;margin:18px 0 12px;padding-bottom:6px;border-bottom:1.5px solid var(--bbg)}
+.progress-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:7px;padding:16px;margin-top:12px;display:none}
+.progress-bar{height:2px;background:var(--border);border-radius:4px;margin:10px 0 8px;overflow:hidden}
+.progress-fill{height:100%;background:var(--bronze);border-radius:4px;transition:width .6s ease}
+.progress-lbl{font-size:12px;font-weight:700;color:var(--navy)}
+.progress-step{font-size:11px;color:var(--muted);margin-top:2px}
+.spin{display:inline-block;width:11px;height:11px;border:1.5px solid rgba(139,105,20,.25);border-top-color:var(--bronze);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-left:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* AUDIO UPLOAD */
+.audio-dropzone{border:2px dashed var(--bd);border-radius:8px;padding:28px 24px;text-align:center;cursor:pointer;transition:all .15s;background:var(--surface);user-select:none}
+.audio-dropzone:hover,.audio-dropzone.drag-over{border-color:var(--bronze);background:var(--bbg)}
+.adz-icon{font-size:28px;margin-bottom:8px;color:var(--navy);opacity:.3;line-height:1}
+.adz-label{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:3px}
+.adz-sub{font-size:11px;color:var(--light)}
+.audio-file-loaded{background:#fff;border:1.5px solid var(--bronze);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.afl-icon{width:32px;height:32px;background:var(--navy);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--bronze2);flex-shrink:0;letter-spacing:-.01em}
+.afl-info{flex:1;min-width:0}
+.afl-name{font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.afl-meta{font-size:11px;color:var(--muted)}
+.afl-status{font-size:10px;font-weight:700;margin-top:3px}
+.afl-status.analyzing{color:var(--amber)}
+.afl-status.ready{color:var(--green)}
+.afl-status.error{color:var(--red)}
+.afl-rm{background:none;border:none;cursor:pointer;color:var(--light);font-size:16px;padding:0;line-height:1;flex-shrink:0}.afl-rm:hover{color:var(--red)}
+.key-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.key-input{flex:1;background:#fff;border:1.5px solid var(--border);border-radius:5px;color:var(--text);font-family:'Inter',monospace;font-size:12px;padding:8px 12px;outline:none;transition:border-color .15s;letter-spacing:.03em}
+.key-input:focus{border-color:var(--bronze)}
+.key-input::placeholder{color:var(--light);font-family:'Inter',sans-serif;letter-spacing:0}
+.key-hint{font-size:10px;color:var(--light);line-height:1.6}
+.toggle-tx{font-size:11px;color:var(--muted);cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;padding:0;display:inline-flex;align-items:center;gap:4px;margin-bottom:12px}
+.toggle-tx:hover{color:var(--navy)}
+.err-banner{background:var(--rbg);border:1.5px solid rgba(153,27,27,.20);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:12px;line-height:1.6}
+
+/* DASHBOARD */
+.dashboard-view{padding:28px 36px;max-width:860px}
+.db-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--navy);margin-bottom:20px}
+.db-section{margin-bottom:36px}
+.db-row{display:flex;gap:20px;align-items:flex-start}
+.hex-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:20px;flex:0 0 260px}
+.hex-card-title{font-size:10px;font-weight:700;color:var(--bronze);text-transform:uppercase;letter-spacing:.10em;margin-bottom:14px}
+.milestones-card{flex:1;display:flex;flex-direction:column;gap:10px}
+.ms-item{background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:14px;transition:all .2s}
+.ms-item.earned{border-color:var(--bronze);background:var(--bbg)}
+.ms-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:'Playfair Display',serif;flex-shrink:0}
+.ms-item.earned .ms-icon{background:var(--navy);color:var(--bronze2)}
+.ms-item:not(.earned) .ms-icon{background:var(--nbg);color:var(--light)}
+.ms-body{flex:1;min-width:0}
+.ms-title{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.ms-item:not(.earned) .ms-title{color:var(--muted)}
+.ms-sub{font-size:11px;color:var(--muted)}
+.ms-progress{margin-top:5px;height:3px;background:var(--border);border-radius:4px;overflow:hidden}
+.ms-progress-fill{height:100%;background:var(--bronze);border-radius:4px;transition:width .5s ease}
+.strength-list{display:flex;flex-direction:column;gap:8px}
+.strength-item{background:#fff;border:1.5px solid var(--border);border-left:3px solid var(--bronze);border-radius:0 7px 7px 0;padding:12px 16px}
+.strength-date{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.strength-text{font-size:13px;color:var(--navy);line-height:1.6;font-style:italic}
+.time-stats-grid{display:flex;gap:12px;flex-wrap:wrap}
+.time-stat-card{background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:14px 18px;min-width:130px}
+.ts-val{font-size:22px;font-weight:700;font-family:'Playfair Display',serif;color:var(--navy);margin-bottom:2px}
+.ts-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* REPORT */
+.report-view{padding:28px 48px}
+.rpt-wrap{max-width:740px}
+.rpt-header{padding-bottom:24px;border-bottom:1.5px solid var(--border)}
+.rpt-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.rpt-meta{font-size:12px;color:var(--muted);line-height:1.8}
+.rpt-sec{font-size:9px;font-weight:700;color:var(--bronze);text-transform:uppercase;letter-spacing:.14em;margin:32px 0 14px;padding-bottom:8px;border-bottom:1.5px solid var(--bbg)}
+/* Audio insights block */
+.audio-block{background:var(--nbg);border:1.5px solid var(--border);border-radius:8px;padding:18px 20px;margin-top:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+.ab-item-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.ab-item-val{font-size:16px;font-weight:700;color:var(--navy);font-family:'Playfair Display',serif}
+.ab-item-sub{font-size:10px;color:var(--muted);margin-top:1px}
+/* Time feedback */
+.time-feedback{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:16px 20px;margin-top:16px;display:flex;gap:24px;align-items:center}
+.tf-bar-wrap{flex:1}
+.tf-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;justify-content:space-between}
+.tf-track{height:8px;background:var(--border);border-radius:4px;position:relative;overflow:hidden;margin-bottom:8px}
+.tf-allotted{height:100%;background:var(--nbg);border-radius:4px;position:absolute;left:0;top:0}
+.tf-actual{height:100%;border-radius:4px;position:absolute;left:0;top:0}
+.tf-verdict{font-size:13px;font-weight:600;color:var(--navy)}
+.tf-note{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+.tf-nums{display:flex;flex-direction:column;gap:6px;flex-shrink:0;text-align:right}
+.tf-num{font-size:11px;color:var(--muted)}
+.tf-num b{color:var(--navy);font-size:14px;font-family:'Playfair Display',serif;display:block}
+/* Report content */
+.overall-block{background:var(--navy);border-radius:8px;padding:28px;margin-top:28px}
+.overall-letter{font-size:72px;font-weight:700;font-family:'Playfair Display',serif;line-height:1;margin-bottom:22px;color:var(--bronze2)}
+.overall-item{margin-bottom:18px}.overall-item:last-child{margin-bottom:0}
+.overall-item-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.10em;margin-bottom:4px}
+.overall-item-body{font-size:13px;line-height:1.7;color:rgba(255,255,255,.85)}
+.obs-item{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}.obs-item:last-child{border-bottom:none}
+.obs-hd{display:flex;gap:12px;margin-bottom:8px;align-items:baseline}
+.obs-n{font-size:11px;font-weight:700;color:var(--bronze);flex-shrink:0;width:20px}
+.obs-t{font-size:14px;font-weight:700;color:var(--navy);line-height:1.4}
+.obs-body p{font-size:13px;line-height:1.8;color:rgba(15,27,45,.72);margin-bottom:8px}
+.obs-body p:last-child{margin-bottom:0}
+.fp-table{width:100%;border-collapse:collapse;border:1.5px solid var(--border);border-radius:6px;overflow:hidden}
+.fp-table tr{border-bottom:1px solid var(--border)}.fp-table tr:last-child{border-bottom:none}
+.fp-table td{padding:12px 16px;vertical-align:top;font-size:13px;line-height:1.7}
+.fp-table tr:nth-child(odd){background:#fff}.fp-table tr:nth-child(even){background:var(--surface)}
+.fp-phase{font-weight:700;white-space:nowrap;width:108px;color:var(--navy);font-size:12px}
+.fp-desc{color:rgba(15,27,45,.72)}.fp-grade{width:72px;text-align:center}
+.transitions-block{padding:16px 20px;background:#fff;border:1.5px solid var(--border);border-radius:6px}
+.transitions-rating{font-size:13px;margin-bottom:10px}
+.star-f{color:var(--bronze)}.star-e{color:var(--border)}
+.transitions-body p{font-size:13px;line-height:1.8;color:rgba(15,27,45,.72);margin-bottom:8px}
+.transitions-body p:last-child{margin-bottom:0}
+.sticky-card{background:#fff;border:1.5px solid var(--border);border-left:3px solid var(--bronze);border-radius:0 6px 6px 0;padding:16px 18px;margin-bottom:10px}
+.sticky-quote{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;line-height:1.5;color:var(--navy);margin-bottom:8px}
+.sticky-stars{margin-bottom:6px;font-size:13px}.sticky-body{font-size:13px;line-height:1.7;color:var(--muted)}
+.cut-card{background:#fff;border:1.5px solid var(--border);border-left:3px solid var(--navy);border-radius:0 6px 6px 0;padding:14px 16px;margin-bottom:10px}
+.cut-title-line{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:7px}
+.cut-body p{font-size:13px;line-height:1.7;color:var(--muted);margin-bottom:6px}
+.cut-time{font-size:11px;font-weight:700;color:var(--bronze);text-transform:uppercase;letter-spacing:.04em;margin-top:6px}
+.time-block{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;padding:20px;font-size:13px;line-height:1.8;color:var(--text);margin-bottom:40px}
+.time-block strong{color:var(--bronze);display:block;margin-bottom:8px;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.saved-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--green);background:var(--gbg);border-radius:4px;padding:2px 8px;margin-left:8px}
+.empty-view{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:40px}
+.empty-icon{width:44px;height:44px;border:1.5px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--navy);opacity:.2}
+.empty-view p{font-size:13px;line-height:1.7;max-width:260px;color:var(--light)}
+</style>
+</head>
+<body>
+
+<div class="modal-overlay" id="profileModal" style="display:none">
+  <div class="modal"><div id="modalContent"></div></div>
+</div>
+
+<div id="app">
+  <header class="hd">
+    <div class="logo">V</div>
+    <span class="brand">VOX</span>
+    <div class="sep"></div>
+    <div class="hd-info" id="hdInfo"><span style="color:var(--light)">Sermon Feedback</span></div>
+    <span class="gbadge gn" id="gbadge" style="display:none">—</span>
+    <button class="btn btn-s btn-sm" id="btnExport" onclick="doExport()" style="display:none">Export</button>
+  </header>
+
+  <div class="body">
+    <div class="left-panel">
+      <div class="profile-card" id="profileCard"></div>
+      <div class="lp-nav">
+        <button class="lp-btn" id="btnDash" onclick="showDashboard()">Dashboard</button>
+        <button class="btn btn-p" onclick="showAnalyze()" style="width:100%;border-radius:5px;padding:8px;font-size:12px;justify-content:center;font-weight:700">+ New Analysis</button>
+      </div>
+      <div class="history-hd">Sermon History</div>
+      <div class="history-list" id="historyList"></div>
+    </div>
+
+    <div class="right-panel" id="rightPanel">
+      <div class="empty-view">
+        <div class="empty-icon">V</div>
+        <p>Create your profile to begin tracking your preaching.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let smNs=null, dlNs=null
+let activeSermonId=null, lastRawText='', currentView='empty'
+let pendingAudioFile=null, pendingAudioData=null, useTranscriptMode=false
+
+// ===== STORAGE =====
+function lp(){try{return JSON.parse(localStorage.getItem('vox_profile')||'null')}catch{return null}}
+function sp(p){try{localStorage.setItem('vox_profile',JSON.stringify(p))}catch{}}
+function ls(){try{return JSON.parse(localStorage.getItem('vox_sermons')||'[]')}catch{return[]}}
+function ss(a){try{localStorage.setItem('vox_sermons',JSON.stringify(a))}catch{}}
+function addSermon(s){const a=ls();a.unshift(s);if(a.length>200)a.pop();ss(a)}
+function getApiKey(){try{return localStorage.getItem('vox_openai_key')||''}catch{return''}}
+function setApiKey(k){try{localStorage.setItem('vox_openai_key',k)}catch{}}
+
+// ===== INIT =====
+;(async()=>{
+  try{smNs=await window.claude.use('sample')}catch{}
+  try{dlNs=await window.claude.use('downloads')}catch{}
+  const p=lp()
+  if(!p)showProfileModal(true)
+  else renderAll()
+})()
+
+function renderAll(){
+  const p=lp();if(!p)return
+  renderProfileCard(p);renderHistory()
+  if(ls().length)showDashboard()
+  else showAnalyze()
+}
+
+// ===== HELPERS =====
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function v(id){return(document.getElementById(id)||{}).value||''}
+function fmtDate(d){if(!d)return'';try{return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}catch{return d}}
+function fmtMins(m){if(!m)return'';const h=Math.floor(m/60),min=m%60;return h?`${h}h ${min}m`:`${min}m`}
+function fmtDuration(secs){const m=Math.floor(secs/60),s=Math.round(secs%60);return`${m}:${String(s).padStart(2,'0')}`}
+function gradeToNum(g){const map={'A+':100,'A':95,'A-':90,'B+':82,'B':77,'B-':72,'C+':62,'C':57,'C-':52};return map[(g||'').trim()]||0}
+function gradeToLetter(g){const map={'A+':4.3,'A':4.0,'A-':3.7,'B+':3.3,'B':3.0,'B-':2.7,'C+':2.3,'C':2.0,'C-':1.7};return map[(g||'').trim()]||0}
+function numToGrade(n){if(n>=4.15)return'A+';if(n>=3.85)return'A';if(n>=3.5)return'A-';if(n>=3.15)return'B+';if(n>=2.85)return'B';if(n>=2.5)return'B-';if(n>=2.15)return'C+';if(n>=1.85)return'C';return'C-'}
+function avgLetterGrade(sermons){if(!sermons.length)return'';const nums=sermons.map(s=>gradeToLetter(s.grade)).filter(n=>n>0);if(!nums.length)return'';return numToGrade(nums.reduce((a,b)=>a+b,0)/nums.length)}
+function gradeHtml(g,cls='gpill'){const t=(g||'').trim();if(!t||t==='—')return`<span class="${cls} gpn">—</span>`;if(/incomplete/i.test(t))return`<span class="${cls} gpn">Inc.</span>`;const f=t[0].toUpperCase();return`<span class="${cls} ${f==='A'?'gpa':f==='B'?'gpb':f==='C'?'gpc':'gpd'}">${esc(t)}</span>`}
+function starsHtml(s){return(s||'').split('').map(c=>c==='★'?`<span class="star-f">★</span>`:c==='☆'?`<span class="star-e">★</span>`:'').join('')}
+function parasHtml(lines){const paras=[];let cur=[];for(const l of lines){if(!l.trim()){if(cur.length){paras.push(cur.join(' '));cur=[]}}else cur.push(l.trim())}if(cur.length)paras.push(cur.join(' '));return paras.map(p=>`<p>${esc(p)}</p>`).join('')}
+function parsePhaseGrades(raw){const phases={destination:'',onboarding:'',takeoff:'',flightPath:'',turbulence:'',landing:''};const keys={destination:['destination'],onboarding:['onboarding'],takeoff:['takeoff'],flightPath:['flight path'],turbulence:['turbulence'],landing:['landing']};for(const line of (raw||'').split('\n')){const parts=line.split('|');if(parts.length>=3){const pn=parts[0].trim().toLowerCase(),gr=parts[parts.length-1].trim();for(const[k,ns]of Object.entries(keys)){if(ns.some(n=>pn.includes(n))){phases[k]=gr;break}}}}return phases}
+function parseStrength(raw){const m=(raw||'').match(/at an elite level[:\s]+([^\n]+(?:\n(?![A-Z]).*)*)/i);if(!m)return'';return m[1].replace(/\n/g,' ').trim().slice(0,200)}
+function gradeFromPct(n){if(n>=97)return'A+';if(n>=93)return'A';if(n>=88)return'A-';if(n>=80)return'B+';if(n>=75)return'B';if(n>=70)return'B-';if(n>=60)return'C+';if(n>=55)return'C';if(n>0)return'C-';return'—'}
+
+// ===== PROFILE CARD =====
+function renderProfileCard(p){
+  const sermons=ls(),initials=p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()
+  const avg=avgLetterGrade(sermons),totalMins=sermons.reduce((a,s)=>a+(s.actualTime||0),0)
+  document.getElementById('profileCard').innerHTML=`
+    <div class="pc-avatar">${esc(initials)}</div>
+    <div class="pc-name">${esc(p.name)}</div>
+    <div class="pc-role">${esc(p.role)}${p.church?' · '+esc(p.church):''}</div>
+    <div class="pc-stats">
+      <div><span class="pc-stat-val">${sermons.length}</span><span class="pc-stat-lbl">Sermons</span></div>
+      ${avg?`<div><span class="pc-stat-val" style="color:var(--bronze)">${esc(avg)}</span><span class="pc-stat-lbl">Avg Grade</span></div>`:''}
+      ${totalMins>=60?`<div><span class="pc-stat-val">${fmtMins(totalMins)}</span><span class="pc-stat-lbl">Logged</span></div>`:''}
+    </div>
+    <button class="pc-edit" onclick="showProfileModal(false)">Edit Profile</button>
+  `
+}
+
+// ===== HISTORY =====
+function renderHistory(){
+  const sermons=ls(),el=document.getElementById('historyList')
+  if(!sermons.length){el.innerHTML=`<div class="h-empty">No sermons yet.<br>Click + New Analysis to start.</div>`;return}
+  el.innerHTML=sermons.map(s=>`
+    <div class="h-item${s.id===activeSermonId?' active':''}" onclick="openSermon('${s.id}')">
+      <div class="h-item-body">
+        <div class="h-title">${esc(s.title||'Untitled')}</div>
+        <div class="h-meta">${esc(fmtDate(s.date))}${s.series?' · '+esc(s.series):''}</div>
+      </div>
+      <div style="flex-shrink:0;margin-top:1px">${gradeHtml(s.grade)}</div>
+    </div>`).join('')
+}
+function openSermon(id){const s=ls().find(x=>x.id===id);if(s){activeSermonId=id;renderHistory();showReport(s)}}
+
+// ===== PROFILE MODAL =====
+function showProfileModal(force){
+  const p=lp()||{}
+  document.getElementById('modalContent').innerHTML=`
+    <div class="modal-title">${force?'Welcome to Vox':'Edit Profile'}</div>
+    <p class="modal-sub">${force?'Set up your preacher profile to track sermons and progress over time.':'Update your profile.'}</p>
+    <div class="mfg"><label>Full Name</label><input id="m_name" placeholder="Your name" value="${esc(p.name||'')}"></div>
+    <div class="mfg"><label>Role</label><select id="m_role">${['Lead Pastor','Associate Pastor','Student Pastor','Children\'s Pastor','Worship Leader','Evangelist','Speaker','Other'].map(r=>`<option${p.role===r?' selected':''}>${r}</option>`).join('')}</select></div>
+    <div class="mfg"><label>Church / Organization</label><input id="m_church" placeholder="Church name" value="${esc(p.church||'')}"></div>
+    <div class="modal-foot">
+      <button class="btn btn-p" onclick="saveProfile()">Save Profile</button>
+      ${!force?`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>`:''}
+    </div>`
+  document.getElementById('profileModal').style.display='flex'
+  setTimeout(()=>document.getElementById('m_name').focus(),80)
+}
+function saveProfile(){
+  const name=(document.getElementById('m_name').value||'').trim()
+  if(!name){document.getElementById('m_name').style.borderColor='var(--red)';return}
+  sp({name,role:document.getElementById('m_role').value,church:(document.getElementById('m_church').value||'').trim()})
+  closeModal();renderAll()
+}
+function closeModal(){document.getElementById('profileModal').style.display='none'}
+
+// ===== VIEW HELPERS =====
+function setHd(html,grade){
+  document.getElementById('hdInfo').innerHTML=html
+  const b=document.getElementById('gbadge')
+  if(grade){b.textContent=grade;b.className=`gbadge ${grade[0]==='A'?'ga':grade[0]==='B'?'gb':grade[0]==='C'?'gc':'gd'}`;b.style.display=''}
+  else b.style.display='none'
+}
+
+// ===== AUDIO PIPELINE =====
+
+function encodeWav(float32Array, sampleRate){
+  const len=float32Array.length, buf=new ArrayBuffer(44+len*2), view=new DataView(buf)
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)view.setUint8(o+i,s.charCodeAt(i))}
+  ws(0,'RIFF');view.setUint32(4,36+len*2,true);ws(8,'WAVE');ws(12,'fmt ')
+  view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,1,true)
+  view.setUint32(24,sampleRate,true);view.setUint32(28,sampleRate*2,true)
+  view.setUint16(32,2,true);view.setUint16(34,16,true);ws(36,'data');view.setUint32(40,len*2,true)
+  let off=44
+  for(let i=0;i<len;i++){const s=Math.max(-1,Math.min(1,float32Array[i]));view.setInt16(off,s<0?s*32768:s*32767,true);off+=2}
+  return new Blob([buf],{type:'audio/wav'})
+}
+
+async function analyzeAudio(arrayBuffer){
+  const audioCtx=new (window.AudioContext||window.webkitAudioContext)()
+  const audioBuffer=await audioCtx.decodeAudioData(arrayBuffer.slice(0))
+  const sr=audioBuffer.sampleRate, duration=audioBuffer.duration
+  const raw=audioBuffer.getChannelData(0)
+  const mono=new Float32Array(raw.length)
+  mono.set(raw)
+  if(audioBuffer.numberOfChannels>1){const ch2=audioBuffer.getChannelData(1);for(let i=0;i<mono.length;i++)mono[i]=(mono[i]+ch2[i])/2}
+  await audioCtx.close()
+
+  // Energy in 0.5s windows
+  const winSz=Math.floor(sr*0.5)
+  const energyW=[]
+  for(let i=0;i<mono.length;i+=winSz){
+    const chunk=mono.slice(i,Math.min(i+winSz,mono.length))
+    energyW.push(Math.sqrt(chunk.reduce((s,x)=>s+x*x,0)/chunk.length))
+  }
+
+  // Silence threshold = 15th percentile * 2.2
+  const sorted=[...energyW].sort((a,b)=>a-b)
+  const silThresh=sorted[Math.floor(sorted.length*0.15)]*2.2
+
+  // Detect pauses
+  const pauses=[];let silStart=-1
+  for(let i=0;i<energyW.length;i++){
+    if(energyW[i]<silThresh){if(silStart===-1)silStart=i}
+    else{if(silStart!==-1){const dur=(i-silStart)*0.5;if(dur>=1.0)pauses.push({start:silStart*0.5,end:i*0.5,duration:dur});silStart=-1}}
+  }
+
+  // Energy variance
+  const p25=sorted[Math.floor(sorted.length*.25)],p75=sorted[Math.floor(sorted.length*.75)],med=sorted[Math.floor(sorted.length*.5)]
+  const variance=med>0?(p75-p25)/med:0
+
+  // 5-minute section averages
+  const bigWin=Math.ceil(300/0.5)
+  let peakMin=0,peakE=0,quietMin=0,quietE=Infinity
+  for(let i=0;i<energyW.length;i+=bigWin){
+    const sec=energyW.slice(i,i+bigWin),avg=sec.reduce((a,b)=>a+b,0)/sec.length,startMin=Math.floor((i*0.5)/60)
+    if(avg>peakE){peakE=avg;peakMin=startMin}
+    if(avg>0&&avg<quietE){quietE=avg;quietMin=startMin}
+  }
+
+  return{
+    duration,
+    durationFormatted:fmtDuration(duration),
+    durationMins:Math.round(duration/60),
+    pauses:pauses.sort((a,b)=>b.duration-a.duration).slice(0,12),
+    totalPauseTime:pauses.reduce((s,p)=>s+p.duration,0),
+    variance,
+    peakMin,
+    quietMin
+  }
+}
+
+async function resampleAudio(arrayBuffer){
+  const audioCtx=new (window.AudioContext||window.webkitAudioContext)()
+  const audioBuffer=await audioCtx.decodeAudioData(arrayBuffer.slice(0))
+  const targetSr=16000
+  const offCtx=new OfflineAudioContext(1,Math.ceil(audioBuffer.duration*targetSr),targetSr)
+  const src=offCtx.createBufferSource()
+  src.buffer=audioBuffer;src.connect(offCtx.destination);src.start()
+  const resampled=await offCtx.startRendering()
+  await audioCtx.close()
+  return{samples:resampled.getChannelData(0),sampleRate:targetSr,duration:audioBuffer.duration}
+}
+
+function countFillerWords(text){
+  const counts={},check=(lbl,re)=>{const n=(text.match(re)||[]).length;if(n>0)counts[lbl]=n}
+  check('um',/\bum+\b/gi);check('uh',/\buh+\b/gi)
+  check('you know',/\byou know\b/gi);check('I mean',/\bI mean\b/gi)
+  check('so (starter)',/(?:^|[.?!]\s+)so\b/gim)
+  check('basically',/\bbasically\b/gi);check('right?',/\bright\?/gi)
+  check('kind of',/\bkind of\b/gi);check('sort of',/\bsort of\b/gi)
+  check('actually',/\bactually\b/gi);check('literally',/\bliterally\b/gi)
+  check('like (filler)',/(?:,\s*like\b|\bso like\b|\bjust like\b)/gi)
+  return counts
+}
+
+function buildAudioContext(audioData,words,fillerCounts){
+  const L=['--- AUDIO ANALYSIS (from recording) ---']
+  L.push(`Duration: ${audioData.durationFormatted}`)
+  if(words?.length){
+    const wpm=Math.round(words.length/(audioData.duration/60))
+    L.push(`Total words spoken: ${words.length.toLocaleString()}`)
+    L.push(`Average speaking rate: ${wpm} words/minute`)
+    const t=Math.floor(words.length/3)
+    const secs=[{l:'Opening third',w:words.slice(0,t)},{l:'Middle third',w:words.slice(t,t*2)},{l:'Closing third',w:words.slice(t*2)}]
+    secs.forEach(({l,w})=>{
+      if(w.length&&w.at(-1).end-w[0].start>0){
+        L.push(`  ${l}: ${Math.round(w.length/((w.at(-1).end-w[0].start)/60))} wpm`)
+      }
+    })
+  }
+  if(audioData.pauses?.length){
+    L.push(`\nSignificant pauses (>1 second):`)
+    audioData.pauses.slice(0,8).forEach(p=>{
+      const mm=Math.floor(p.start/60),ss=Math.round(p.start%60)
+      L.push(`  ${mm}:${String(ss).padStart(2,'0')} — ${p.duration.toFixed(1)}s pause`)
+    })
+    L.push(`Total pause time: ${Math.round(audioData.totalPauseTime)}s`)
+  }
+  L.push(`\nVocal dynamics / energy:`)
+  L.push(`  Range: ${audioData.variance>0.6?'High — strong vocal variety':audioData.variance>0.3?'Moderate — some variation':'Low — delivery may be flat or monotone'}`)
+  L.push(`  Peak energy: around minute ${audioData.peakMin}`)
+  L.push(`  Quietest section: around minute ${audioData.quietMin}`)
+  if(Object.keys(fillerCounts).length){
+    L.push(`\nFiller words detected in transcript:`)
+    Object.entries(fillerCounts).sort((a,b)=>b[1]-a[1]).forEach(([w,n])=>{
+      const rate=words?.length?` (once every ~${Math.round(words.length/n)} words)`:''
+      L.push(`  "${w}": ${n} times${rate}`)
+    })
+  }
+  L.push('--- END AUDIO ANALYSIS ---')
+  return L.join('\n')
+}
+
+async function transcribeChunk(wavBuffer, apiKey, chunkIndex, offset){
+  const fd=new FormData()
+  fd.append('file',new Blob([wavBuffer],{type:'audio/wav'}),'audio.wav')
+  fd.append('model','whisper-1')
+  fd.append('response_format','verbose_json')
+  fd.append('timestamp_granularities[]','word')
+  const resp=await fetch('https://api.openai.com/v1/audio/transcriptions',{
+    method:'POST',
+    headers:{Authorization:'Bearer '+apiKey},
+    body:fd
+  })
+  if(!resp.ok){
+    const err=await resp.json().catch(()=>({}))
+    throw new Error(err?.error?.message||`Whisper API error (${resp.status})`)
+  }
+  return resp.json()
+}
+
+async function transcribeAudio(file, apiKey, progressCb){
+  progressCb('Reading audio file...',5)
+  const arrayBuf=await file.arrayBuffer()
+
+  progressCb('Analyzing audio characteristics...',10)
+  const audioData=await analyzeAudio(arrayBuf)
+
+  progressCb('Resampling for transcription...',18)
+  const{samples,sampleRate}=await resampleAudio(arrayBuf)
+
+  const chunkDur=600,chunkSamples=chunkDur*sampleRate
+  const numChunks=Math.ceil(samples.length/chunkSamples)
+  let allWords=[],fullText=''
+
+  for(let i=0;i<numChunks;i++){
+    const pct=22+(i/numChunks)*68
+    progressCb(numChunks>1?`Transcribing chunk ${i+1} of ${numChunks}...`:'Transcribing audio...',pct)
+    const start=i*chunkSamples,offset=i*chunkDur
+    const chunk=samples.slice(start,Math.min(start+chunkSamples,samples.length))
+    const wavBuffer=encodeWav(chunk,sampleRate).arrayBuffer()
+    const data=await transcribeChunk(await wavBuffer,apiKey,i,offset)
+    fullText+=(i>0?' ':'')+( data.text||'')
+    if(data.words?.length)data.words.forEach(w=>allWords.push({word:w.word,start:(w.start||0)+offset,end:(w.end||0)+offset}))
+  }
+
+  return{text:fullText,words:allWords,audioData}
+}
+
+// ===== AUDIO UI STATE =====
+function handleAudioDrop(e){
+  e.preventDefault()
+  const file=e.dataTransfer.files?.[0]
+  if(file)handleAudioFile(file)
+  document.getElementById('audioDropzone')?.classList.remove('drag-over')
+}
+function handleAudioDragOver(e){e.preventDefault();document.getElementById('audioDropzone')?.classList.add('drag-over')}
+function handleAudioDragLeave(){document.getElementById('audioDropzone')?.classList.remove('drag-over')}
+function handleAudioFile(file){
+  if(!file)return
+  const maxBytes=600*1024*1024
+  if(file.size>maxBytes){showAudioError(`File too large (${(file.size/1024/1024).toFixed(0)}MB). Maximum is 600MB. Try compressing the file first.`);return}
+  pendingAudioFile=file;pendingAudioData=null
+  const ext=(file.name.split('.').pop()||'').toUpperCase().slice(0,4)
+  document.getElementById('audioDropzone').style.display='none'
+  document.getElementById('audioLoaded').style.display='flex'
+  document.getElementById('audioLoaded').innerHTML=`
+    <div class="afl-icon">${esc(ext)}</div>
+    <div class="afl-info">
+      <div class="afl-name">${esc(file.name)}</div>
+      <div class="afl-meta">${(file.size/1024/1024).toFixed(1)} MB</div>
+      <div class="afl-status analyzing" id="aflStatus">Analyzing audio...</div>
+    </div>
+    <button class="afl-rm" onclick="removeAudioFile()" title="Remove">×</button>
+  `
+  document.getElementById('audioErr').style.display='none'
+
+  // Pre-analyze audio locally (fast)
+  file.arrayBuffer().then(buf=>{
+    return analyzeAudio(buf)
+  }).then(data=>{
+    pendingAudioData=data
+    const el=document.getElementById('aflStatus')
+    if(el){
+      el.className='afl-status ready'
+      el.textContent=`${data.durationFormatted} · ${data.pauses.length} pauses detected`
+    }
+    // Auto-fill actual time
+    const at=document.getElementById('f_actual')
+    if(at&&!at.value)at.value=data.durationMins
+  }).catch(err=>{
+    const el=document.getElementById('aflStatus')
+    if(el){el.className='afl-status error';el.textContent='Could not read audio file'}
+  })
+}
+function removeAudioFile(){
+  pendingAudioFile=null;pendingAudioData=null
+  document.getElementById('audioDropzone').style.display=''
+  document.getElementById('audioLoaded').style.display='none'
+  document.getElementById('audioLoaded').innerHTML=''
+  document.getElementById('audioErr').style.display='none'
+  const fi=document.getElementById('audioFileInput');if(fi)fi.value=''
+}
+function showAudioError(msg){
+  const el=document.getElementById('audioErr')
+  if(el){el.textContent=msg;el.style.display='block'}
+}
+function toggleTranscriptMode(){
+  useTranscriptMode=!useTranscriptMode
+  const tz=document.getElementById('txWrap'),az=document.getElementById('audioSection')
+  if(tz)tz.style.display=useTranscriptMode?'block':'none'
+  if(az)az.style.display=useTranscriptMode?'none':'block'
+  const tb=document.getElementById('toggleTxBtn')
+  if(tb)tb.textContent=useTranscriptMode?'Use audio recording instead':'Paste transcript instead'
+}
+
+// ===== ANALYZE FORM =====
+function showAnalyze(){
+  currentView='analyze';activeSermonId=null;pendingAudioFile=null;pendingAudioData=null;useTranscriptMode=false
+  renderHistory()
+  document.getElementById('btnExport').style.display='none'
+  document.getElementById('btnDash').classList.remove('active')
+  setHd(`<span style="color:var(--light)">New Analysis</span>`)
+  const p=lp()||{name:'',church:''},savedKey=getApiKey()
+  document.getElementById('rightPanel').innerHTML=`
+    <div class="analyze-view">
+      <div class="av-title">New Sermon Analysis</div>
+      <div class="av-sub">Preaching as <strong>${esc(p.name)}</strong>${p.church?' at '+esc(p.church):''}.</div>
+      <div class="frow">
+        <div class="fg"><label>Date</label><input id="f_date" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
+        <div class="fg"><label>Service</label><input id="f_service" placeholder="e.g. Sunday Morning"></div>
+      </div>
+      <div class="fg"><label>Series</label><input id="f_series" placeholder="Series name"></div>
+      <div class="fg"><label>Scripture</label><input id="f_scripture" placeholder="e.g. Mark 1:1–15"></div>
+      <div class="fg"><label>Venue</label><input id="f_venue" placeholder="Church / location" value="${esc(p.church||'')}"></div>
+
+      <div class="section-divider">Time Stewardship</div>
+      <div class="frow">
+        <div class="fg"><label>Allotted Time (min)</label><input id="f_allotted" type="number" min="1" max="120" placeholder="e.g. 35"></div>
+        <div class="fg"><label>Actual Time (min)</label><input id="f_actual" type="number" min="1" max="180" placeholder="Auto-filled from audio"></div>
+      </div>
+
+      <div class="section-divider">Sermon Recording</div>
+
+      <div id="audioSection">
+        <div id="audioDropzone" class="audio-dropzone"
+          ondragover="handleAudioDragOver(event)" ondragleave="handleAudioDragLeave()" ondrop="handleAudioDrop(event)"
+          onclick="document.getElementById('audioFileInput').click()">
+          <input type="file" id="audioFileInput" accept="audio/*,video/mp4,video/m4v" style="display:none" onchange="if(this.files[0])handleAudioFile(this.files[0])">
+          <div class="adz-icon">♪</div>
+          <div class="adz-label">Drop sermon audio here or click to browse</div>
+          <div class="adz-sub">MP3 · M4A · WAV · MP4 · OGG · WEBM · up to 600MB</div>
+        </div>
+        <div id="audioLoaded" style="display:none"></div>
+        <div id="audioErr" class="err-banner" style="display:none"></div>
+
+        <div class="fg" style="margin-top:12px">
+          <label>OpenAI API Key <span style="font-weight:400;color:var(--muted)">— for transcription</span></label>
+          <div class="key-row">
+            <input type="password" class="key-input" id="f_apikey" placeholder="sk-..." value="${esc(savedKey)}" oninput="setApiKey(this.value.trim())">
+          </div>
+          <div class="key-hint">Used only for Whisper transcription · stays in your browser · never sent anywhere else · <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--bronze)">Get a key →</a></div>
+        </div>
+
+        <button class="toggle-tx" id="toggleTxBtn" onclick="toggleTranscriptMode()">↓ Paste transcript instead (no API key needed)</button>
+      </div>
+
+      <div id="txWrap" style="display:none">
+        <div class="fg"><textarea class="tx-area" id="txInput" placeholder="Paste full sermon transcript here."></textarea></div>
+        <button class="toggle-tx" id="toggleTxBtn2" onclick="toggleTranscriptMode()">↑ Use audio recording instead</button>
+      </div>
+
+      <div id="progressWrap" class="progress-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span class="progress-lbl" id="progLbl">Analyzing</span><span class="spin"></span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+        <div class="progress-step" id="progStep">Starting...</div>
+      </div>
+
+      <div style="margin-top:10px">
+        <button class="btn btn-p" id="btnAnalyze" onclick="analyze()"${!smNs?' disabled':''}>
+          ${smNs?'Analyze Sermon':'AI unavailable'}
+        </button>
+      </div>
+    </div>
+  `
+}
+
+// ===== ANALYZE =====
+async function analyze(){
+  if(!smNs)return
+  const p=lp()||{name:'the preacher'},fn=p.name.split(' ')[0]
+  const series=v('f_series'),scripture=v('f_scripture'),venue=v('f_venue'),service=v('f_service'),date=v('f_date')
+  const allotted=parseInt(v('f_allotted'))||0, actual=parseInt(v('f_actual'))||0
+
+  const usingAudio=!useTranscriptMode&&!!pendingAudioFile
+  const usingTranscript=useTranscriptMode||!pendingAudioFile
+
+  if(usingAudio){
+    const key=v('f_apikey').trim()
+    if(!key){showAudioError('Enter your OpenAI API key to transcribe audio.');return}
+    if(!key.startsWith('sk-')){showAudioError('API key should start with "sk-".');return}
+    setApiKey(key)
+  } else {
+    const tx=v('txInput').trim()
+    if(tx.length<200){alert('Please paste a longer transcript.');return}
+  }
+
+  const btn=document.getElementById('btnAnalyze');if(btn)btn.disabled=true
+  const pw=document.getElementById('progressWrap');if(pw)pw.style.display='block'
+
+  const setProgress=(step,pct)=>{
+    const pf=document.getElementById('progFill'),ps=document.getElementById('progStep')
+    if(pf)pf.style.width=pct+'%';if(ps)ps.textContent=step
+  }
+
+  let transcript='',audioContextText='',words=[],audioDataResult=null
+
+  try{
+    if(usingAudio){
+      const apiKey=v('f_apikey').trim()
+      const result=await transcribeAudio(pendingAudioFile,apiKey,(step,pct)=>{setProgress(step,pct)})
+      transcript=result.text;words=result.words||[];audioDataResult=result.audioData
+      const fillerCounts=countFillerWords(transcript)
+      audioContextText=buildAudioContext(audioDataResult,words,fillerCounts)
+      setProgress('Building coaching report...',85)
+    } else {
+      transcript=v('txInput').trim()
+      const fakeSteps=[['Reading sermon structure',8],['Scoring grade',20],['Growth observations',35],['Evaluating flight plan',52],['Analyzing transitions',65],['Sticky statements',78],['What to cut',90],['Assembling',96]]
+      let si=0
+      const stepT=setInterval(()=>{if(si<fakeSteps.length){setProgress(fakeSteps[si][0],fakeSteps[si][1]);si++}else clearInterval(stepT)},2200)
+      await new Promise(r=>setTimeout(r,100))
+      const fillerCounts=countFillerWords(transcript)
+      if(Object.keys(fillerCounts).length){
+        audioContextText=`--- FILLER WORD ANALYSIS ---\n`+Object.entries(fillerCounts).sort((a,b)=>b[1]-a[1]).map(([w,n])=>`  "${w}": ${n} times`).join('\n')+'\n--- END ---'
+      }
+    }
+
+    setProgress('Generating coaching report...',87)
+
+    const prompt=buildPrompt(fn,p,series,scripture,venue,service,date,allotted,actual,transcript,audioContextText,!!audioDataResult)
+    const result=await smNs(prompt,{modelTier:'complex'})
+    const raw=result.text
+    lastRawText=raw
+
+    const titleMatch=raw.match(/"([^"]+)"\s*—/),gradeMatch=raw.match(/OVERALL GRADE:\s*([A-C][+\-]?)/)
+    const title=titleMatch?titleMatch[1]:'Untitled',grade=gradeMatch?gradeMatch[1]:''
+    const phaseGrades=parsePhaseGrades(raw)
+
+    const sermon={
+      id:Date.now().toString(),date,series,scripture,venue,service,title,grade,
+      reportText:raw,phaseGrades,
+      allottedTime:allotted||null,
+      actualTime:actual||(audioDataResult?audioDataResult.durationMins:null)||null,
+      audioAnalysis:audioDataResult?{
+        duration:audioDataResult.duration,
+        variance:audioDataResult.variance,
+        pauseCount:audioDataResult.pauses.length,
+        peakMin:audioDataResult.peakMin,
+        wordCount:words.length
+      }:null,
+      savedAt:new Date().toISOString()
+    }
+    addSermon(sermon);activeSermonId=sermon.id
+    renderProfileCard(lp());renderHistory()
+    setHd(`<b>${esc(title)}</b><span class="saved-pill">Saved</span>`,grade)
+    document.getElementById('btnExport').style.display=''
+    document.getElementById('rightPanel').innerHTML=`<div class="report-view"><div class="rpt-wrap" id="rptWrap"></div></div>`
+    document.getElementById('rptWrap').innerHTML=renderReportHtml(raw,allotted||null,actual||(audioDataResult?audioDataResult.durationMins:null)||null,audioDataResult)
+  }catch(e){
+    const msg=e.message||'Analysis failed'
+    if(btn)btn.disabled=false;if(pw)pw.style.display='none'
+    showAudioError(msg)
+    const errEl=document.getElementById('audioErr');if(errEl)errEl.style.display='block'
+  }
+}
+
+function buildPrompt(fn,p,series,scripture,venue,service,date,allotted,actual,transcript,audioCtx,hasAudio){
+  return`You are an elite preaching coach for a church cohort using the Airplane Method (Destination, Onboarding, Takeoff, Flight Path, Turbulence, Landing).
+
+Analyze this sermon and generate a full coaching report. Reference actual quotes and moments. Direct coaching voice.${hasAudio?'\n\nThis analysis is based on an AUDIO RECORDING. The transcript was generated by speech recognition — pay special attention to the audio-derived metrics (pace, pauses, vocal dynamics, filler words) included below and reference them in your observations.':''}
+
+SERMON CONTEXT:
+Preacher: ${p.name}${series?'\nSeries: '+series:''}${scripture?'\nScripture: '+scripture:''}${venue?'\nVenue: '+venue:''}${service?'\nService: '+service:''}${date?'\nDate: '+date:''}${allotted?'\nAllotted time: '+allotted+' minutes':''}${actual?'\nActual time: '+actual+' minutes':''}
+
+${audioCtx?audioCtx+'\n\n':''}USE EXACTLY THESE SECTION HEADERS IN THIS ORDER:
+
+---HEADER---
+"[Detected sermon title]" — ${fn}
+${series?'Series: '+series+' | ':''}${scripture||''}
+${venue||''}${service?' ('+service+')':''}
+
+---OVERALL GRADE---
+OVERALL GRADE: [letter A/B/C with optional + or -]
+What ${fn} does at an elite level: [2–3 sentences]
+Current ceiling: [2–3 sentences]
+One thing that would level them up immediately: [2–4 sentences]
+
+---GROWTH OBSERVATIONS---
+[Exactly 8. Obs 8 MUST be "Filler Words" — use the detected data above to catalog every specific filler word with exact frequency counts. Be precise.]
+1. [Title]
+[2–4 sentences]
+2. [Title]
+[body]
+3. [Title]
+[body]
+4. [Title]
+[body]
+5. [Title]
+[body]
+6. [Title]
+[body]
+7. [Title — use audio data if available, e.g. "Pacing" or "Vocal Dynamics"]
+${hasAudio?'[Reference the audio metrics — speaking rate per section, energy variance, pause usage.]':'[body]'}
+8. Filler Words
+[Catalog every filler word with frequency. Be specific. What it costs.]
+
+---FLIGHT PLAN---
+Destination | [2–4 sentences] | [grade]
+Onboarding | [2–4 sentences] | [grade]
+Takeoff | [2–4 sentences] | [grade]
+Flight Path | [3–5 sentences] | [grade]
+Turbulence | [2–4 sentences] | [grade]
+Landing | [2–4 sentences] | [grade or Incomplete]
+Post-Flight | [2 sentence summary] | [grade]
+
+---TRANSITIONS---
+★★★☆☆
+[1–2 paragraphs]
+
+---STICKY STATEMENTS---
+[3–6 stickies]
+"[quote]" ★★★★☆ — [2–4 sentence analysis]
+
+---WHAT TO CUT---
+Cut 1 — [Title]
+[description]
+Time saved: [estimate]
+Cut 2 — [Title]
+[description]
+Time saved: [estimate]
+Cut 3 — [Title]
+[description]
+Time saved: [estimate]
+
+---WHAT TO DO WITH THAT TIME---
+[2–3 sentences]
+
+---END---
+
+SERMON TRANSCRIPT:
+${transcript.slice(0,14000)}`
+}
+
+// ===== SHOW REPORT =====
+function showReport(sermon){
+  currentView='report';lastRawText=sermon.reportText||''
+  document.getElementById('btnDash').classList.remove('active')
+  setHd(`<b>${esc(sermon.title||'Untitled')}</b>`,sermon.grade)
+  document.getElementById('btnExport').style.display=sermon.reportText?'':'none'
+  document.getElementById('rightPanel').innerHTML=`<div class="report-view"><div class="rpt-wrap" id="rptWrap"></div></div>`
+  document.getElementById('rptWrap').innerHTML=renderReportHtml(sermon.reportText||'',sermon.allottedTime,sermon.actualTime,sermon.audioAnalysis)
+}
+
+// ===== REPORT RENDERER =====
+function renderReportHtml(raw,allotted,actual,audioData){
+  const SEC={header:[],overall:[],growth:[],flight:[],transitions:[],sticky:[],cuts:[],timefree:[]}
+  let cur='header'
+  for(const line of raw.split('\n')){
+    const t=line.trim()
+    if(t==='---OVERALL GRADE---'){cur='overall';continue}
+    if(t==='---GROWTH OBSERVATIONS---'){cur='growth';continue}
+    if(t==='---FLIGHT PLAN---'){cur='flight';continue}
+    if(t==='---TRANSITIONS---'){cur='transitions';continue}
+    if(t==='---STICKY STATEMENTS---'){cur='sticky';continue}
+    if(t==='---WHAT TO CUT---'){cur='cuts';continue}
+    if(t==='---WHAT TO DO WITH THAT TIME---'){cur='timefree';continue}
+    if(t==='---END---'||t==='---HEADER---')continue
+    if(t.startsWith('OVERALL GRADE:')){cur='overall';SEC.overall.push(line);continue}
+    if(cur in SEC)SEC[cur].push(line)
+  }
+  let html=''
+
+  // HEADER
+  const hlines=SEC.header.filter(l=>l.trim())
+  if(hlines.length){
+    html+=`<div class="rpt-header"><div class="rpt-title">${esc(hlines[0].trim())}</div>`
+    hlines.slice(1).filter(l=>l.trim()).forEach(m=>{html+=`<div class="rpt-meta">${esc(m.trim())}</div>`})
+    html+=`</div>`
+  }
+
+  // AUDIO INSIGHTS
+  if(audioData?.duration){
+    const dynamics=audioData.variance>0.6?'High range':audioData.variance>0.3?'Moderate':'Flat delivery'
+    html+=`<div class="audio-block">
+      <div><div class="ab-item-lbl">Sermon Length</div><div class="ab-item-val">${fmtDuration(audioData.duration)}</div></div>
+      ${audioData.wordCount?`<div><div class="ab-item-lbl">Words Spoken</div><div class="ab-item-val">${audioData.wordCount.toLocaleString()}</div><div class="ab-item-sub">${Math.round(audioData.wordCount/(audioData.duration/60))} wpm avg</div></div>`:''}
+      <div><div class="ab-item-lbl">Pauses Found</div><div class="ab-item-val">${audioData.pauseCount}</div><div class="ab-item-sub">significant (&gt;1s)</div></div>
+      <div><div class="ab-item-lbl">Vocal Dynamics</div><div class="ab-item-val" style="font-size:13px">${dynamics}</div><div class="ab-item-sub">energy variation</div></div>
+    </div>`
+  }
+
+  // TIME FEEDBACK
+  if(allotted&&actual){
+    const diff=actual-allotted,pct=Math.min(Math.round(actual/allotted*100),160)
+    const color=Math.abs(diff)<=2?'var(--green)':Math.abs(diff)>5?'var(--red)':'var(--amber)'
+    const verdict=Math.abs(diff)<=2?'Well stewarded.':diff>0?`${diff} min over.`:`${Math.abs(diff)} min under.`
+    const note=Math.abs(diff)<=2?'You honored your host and your congregation\'s time.':diff>5?'Going significantly over signals unfinished work and puts pressure on the next service.':diff>0?'Slightly over. Your landing likely needed more compression.':Math.abs(diff)>5?'Significant time left on the table. Content may not be fully developed.':'Slightly under. Room to deepen your application.'
+    html+=`<div class="time-feedback">
+      <div class="tf-bar-wrap">
+        <div class="tf-label"><span>Time Stewardship</span><span style="color:${color};font-weight:700">${verdict}</span></div>
+        <div class="tf-track"><div class="tf-allotted" style="width:100%"></div><div class="tf-actual" style="width:${Math.min(pct,100)}%;background:${color}"></div></div>
+        <div class="tf-note">${note}</div>
+      </div>
+      <div class="tf-nums"><div class="tf-num"><b>${allotted}m</b>Allotted</div><div class="tf-num"><b>${actual}m</b>Actual</div></div>
+    </div>`
+  }
+
+  // OVERALL GRADE
+  if(SEC.overall.length){
+    let gradeLetter=''
+    const gl=SEC.overall.find(l=>/OVERALL GRADE:\s*[A-C][+\-]?/i.test(l.trim()))
+    if(gl){const m=gl.trim().match(/OVERALL GRADE:\s*([A-C][+\-]?)/i);if(m)gradeLetter=m[1]}
+    const rest=SEC.overall.filter(l=>l.trim()&&!l.trim().match(/^OVERALL GRADE:/i))
+    let items=[],curItem=null
+    for(const line of rest){
+      const t=line.trim()
+      if(/^(What .+ (does|do) at|Current ceiling|One thing)/i.test(t)){if(curItem)items.push(curItem);const ci=t.indexOf(':');curItem=ci>-1?{lbl:t.slice(0,ci),body:[t.slice(ci+1).trim()]}:{lbl:t,body:[]}}
+      else if(curItem&&t)curItem.body.push(t)
+    }
+    if(curItem)items.push(curItem)
+    html+=`<div class="overall-block">${gradeLetter?`<div class="overall-letter">${esc(gradeLetter)}</div>`:''}`
+    html+=items.map(it=>`<div class="overall-item"><div class="overall-item-lbl">${esc(it.lbl)}</div><div class="overall-item-body">${esc(it.body.join(' '))}</div></div>`).join('')
+    html+=`</div>`
+  }
+
+  // GROWTH OBSERVATIONS
+  if(SEC.growth.length){
+    html+=`<h2 class="rpt-sec">Growth Observations</h2>`
+    let items=[],curObs=null
+    for(const line of SEC.growth){
+      const t=line.trim(),num=/^(\d+)\.\s+(.+)/.exec(t)
+      if(num){if(curObs)items.push(curObs);curObs={n:num[1],title:num[2],lines:[]}}
+      else if(curObs&&t)curObs.lines.push(t)
+    }
+    if(curObs)items.push(curObs)
+    for(const obs of items)html+=`<div class="obs-item"><div class="obs-hd"><span class="obs-n">${obs.n}.</span><span class="obs-t">${esc(obs.title)}</span></div><div class="obs-body">${parasHtml(obs.lines)}</div></div>`
+  }
+
+  // FLIGHT PLAN
+  const fpRows=SEC.flight.filter(l=>l.trim()&&l.includes('|'))
+  if(fpRows.length){
+    html+=`<h2 class="rpt-sec">Flight Plan</h2><table class="fp-table"><tbody>`
+    fpRows.forEach(row=>{const parts=row.split('|');if(parts.length>=3)html+=`<tr><td class="fp-phase">${esc(parts[0].trim())}</td><td class="fp-desc">${esc(parts.slice(1,-1).join('|').trim())}</td><td class="fp-grade">${gradeHtml(parts.at(-1).trim())}</td></tr>`})
+    html+=`</tbody></table>`
+  }
+
+  // TRANSITIONS
+  if(SEC.transitions.length){
+    const lines=SEC.transitions.filter(l=>l.trim()),hasStars=/[★☆]/.test(lines[0]||'')
+    html+=`<h2 class="rpt-sec">Transitions</h2><div class="transitions-block">${hasStars?`<div class="transitions-rating">${starsHtml(lines[0])}</div>`:''}<div class="transitions-body">${parasHtml(hasStars?lines.slice(1):lines)}</div></div>`
+  }
+
+  // STICKY
+  if(SEC.sticky.length){
+    html+=`<h2 class="rpt-sec">Sticky Statements</h2>`
+    let cards=[],curCard=null
+    for(const line of SEC.sticky.filter(l=>l.trim())){
+      const t=line.trim()
+      if(/^["""'']/.test(t)&&t.length>10){if(curCard)cards.push(curCard);curCard={lines:[t]}}
+      else if(curCard)curCard.lines.push(t)
+      else curCard={lines:[t]}
+    }
+    if(curCard)cards.push(curCard)
+    for(const card of cards){
+      if(!card.lines.length)continue
+      const m=card.lines[0].match(/(["""''][^"""'']+["""''])\s*(★[★☆]*)\s*[—–-]\s*(.*)/)
+      if(m)html+=`<div class="sticky-card"><div class="sticky-quote">${esc(m[1])}</div><div class="sticky-stars">${starsHtml(m[2])}</div><div class="sticky-body">${esc([m[3],...card.lines.slice(1)].join(' '))}</div></div>`
+      else html+=`<div class="sticky-card"><div class="sticky-body">${esc(card.lines.join(' '))}</div></div>`
+    }
+  }
+
+  // CUTS
+  if(SEC.cuts.length){
+    html+=`<h2 class="rpt-sec">What to Cut</h2>`
+    let cuts=[],curCut=null
+    for(const line of SEC.cuts){const t=line.trim();if(/^Cut \d/i.test(t)){if(curCut)cuts.push(curCut);curCut={title:t,lines:[]}}else if(curCut&&t)curCut.lines.push(t)}
+    if(curCut)cuts.push(curCut)
+    for(const cut of cuts){
+      const ti=cut.lines.findIndex(l=>/^Time saved:/i.test(l.trim()))
+      html+=`<div class="cut-card"><div class="cut-title-line">${esc(cut.title)}</div><div class="cut-body">${parasHtml(ti>-1?cut.lines.slice(0,ti):cut.lines)}</div>${ti>-1?`<div class="cut-time">${esc(cut.lines[ti])}</div>`:''}</div>`
+    }
+  }
+
+  // TIME DO WITH
+  if(SEC.timefree.length){
+    const lines=SEC.timefree.filter(l=>l.trim())
+    if(lines.length)html+=`<h2 class="rpt-sec">What to Do with That Time</h2><div class="time-block"><strong>With the time you recover</strong>${parasHtml(lines)}</div>`
+  }
+
+  return html
+}
+
+// ===== DASHBOARD =====
+function showDashboard(){
+  currentView='dashboard';activeSermonId=null
+  renderHistory()
+  document.getElementById('btnExport').style.display='none'
+  document.getElementById('btnDash').classList.add('active')
+  setHd(`<b>Dashboard</b>`)
+  const sermons=ls(),p=lp()||{name:''},count=sermons.length
+  const totalMins=sermons.reduce((a,s)=>a+(s.actualTime||0),0)
+  const totalHours=totalMins/60
+
+  const milestones=[
+    {n:5,label:'5 Sermons',sub:'Consistency is building',icon:'5'},
+    {n:10,label:'10 Sermons',sub:"You're developing rhythm",icon:'10'},
+    {n:20,label:'20 Sermons',sub:'Real patterns are forming',icon:'20'},
+    {n:50,label:'50 Sermons',sub:'Seasoned communicator',icon:'50'},
+    {type:'hours',n:10000,label:'10,000 Hours',sub:`${Math.round(totalHours)} hrs logged`,icon:'∞',progress:Math.min(100,totalHours/10000*100)}
+  ]
+
+  const phases=['destination','onboarding','takeoff','flightPath','turbulence','landing']
+  const phaseLabels=['Dest.','Onboard','Takeoff','Flight Path','Turbulence','Landing']
+  const phaseAvgs=phases.map(ph=>{
+    const scores=sermons.map(s=>gradeToNum(s.phaseGrades&&s.phaseGrades[ph])).filter(n=>n>0)
+    return scores.length?scores.reduce((a,b)=>a+b)/scores.length:0
+  })
+
+  const strengths=sermons.map(s=>({date:s.date,text:parseStrength(s.reportText)})).filter(x=>x.text)
+  const withTime=sermons.filter(s=>s.allottedTime&&s.actualTime)
+  const avgAllotted=withTime.length?Math.round(withTime.reduce((a,s)=>a+s.allottedTime,0)/withTime.length):0
+  const avgActual=withTime.length?Math.round(withTime.reduce((a,s)=>a+s.actualTime,0)/withTime.length):0
+  const avgDiff=avgActual-avgAllotted
+
+  const withAudio=sermons.filter(s=>s.audioAnalysis)
+  const avgWPM=withAudio.length?Math.round(withAudio.reduce((a,s)=>a+(s.audioAnalysis.wordCount||0),0)/withAudio.reduce((a,s)=>a+(s.audioAnalysis.duration||1),0)*60):0
+  const avgVariance=withAudio.length?withAudio.reduce((a,s)=>a+(s.audioAnalysis.variance||0),0)/withAudio.length:0
+
+  document.getElementById('rightPanel').innerHTML=`
+    <div class="dashboard-view">
+      <div class="db-title">${esc(p.name.split(' ')[0])}'s Progress</div>
+
+      <div class="db-row" style="margin-bottom:24px">
+        <div class="hex-card">
+          <div class="hex-card-title">Flight Plan Tracker</div>
+          <svg id="hexSvg" width="220" height="220" viewBox="0 0 220 220"></svg>
+          <div id="hexLegend" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+        <div class="milestones-card">
+          ${milestones.map(m=>{
+            const earned=m.type==='hours'?(totalHours>=m.n):(count>=m.n)
+            return`<div class="ms-item${earned?' earned':''}">
+              <div class="ms-icon">${m.icon}</div>
+              <div class="ms-body">
+                <div class="ms-title">${m.label}</div>
+                <div class="ms-sub">${earned?'Milestone reached':m.sub}</div>
+                ${m.type==='hours'?`<div class="ms-progress"><div class="ms-progress-fill" style="width:${m.progress}%"></div></div>`:''}
+              </div>
+            </div>`
+          }).join('')}
+        </div>
+      </div>
+
+      ${withTime.length||withAudio.length?`
+      <div class="db-section">
+        <div style="font-size:10px;font-weight:700;color:var(--bronze);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px;padding-bottom:8px;border-bottom:1.5px solid var(--bbg)">Time &amp; Voice</div>
+        <div class="time-stats-grid">
+          ${withTime.length?`
+          <div class="time-stat-card"><div class="ts-val">${avgAllotted}m</div><div class="ts-lbl">Avg Allotted</div></div>
+          <div class="time-stat-card"><div class="ts-val">${avgActual}m</div><div class="ts-lbl">Avg Actual</div></div>
+          <div class="time-stat-card"><div class="ts-val" style="color:${Math.abs(avgDiff)<=2?'var(--green)':avgDiff>5?'var(--red)':'var(--amber)'}">${avgDiff>0?'+':''}${avgDiff}m</div><div class="ts-lbl">Avg Over/Under</div></div>`:''}
+          ${avgWPM?`<div class="time-stat-card"><div class="ts-val">${avgWPM}</div><div class="ts-lbl">Avg WPM</div></div>`:''}
+          ${avgVariance?`<div class="time-stat-card"><div class="ts-val" style="font-size:13px">${avgVariance>0.6?'High':avgVariance>0.3?'Mod.':'Low'}</div><div class="ts-lbl">Energy Range</div></div>`:''}
+          <div class="time-stat-card"><div class="ts-val">${fmtMins(totalMins)}</div><div class="ts-lbl">Total Logged</div></div>
+        </div>
+      </div>`:count?`<div style="font-size:12px;color:var(--light);padding:8px 0">Add allotted/actual time or upload audio to unlock Time &amp; Voice tracking.</div>`:''}
+
+      ${strengths.length?`
+      <div class="db-section">
+        <div style="font-size:10px;font-weight:700;color:var(--bronze);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px;padding-bottom:8px;border-bottom:1.5px solid var(--bbg)">Strength Tracker</div>
+        <div class="strength-list">
+          ${strengths.slice(0,8).map(s=>`<div class="strength-item"><div class="strength-date">${fmtDate(s.date)}</div><div class="strength-text">${esc(s.text)}</div></div>`).join('')}
+        </div>
+      </div>`:count?`<div style="font-size:12px;color:var(--light);padding:8px 0">Strength Tracker populates after your first analysis.</div>`:''}
+
+      ${!count?`<div class="empty-view" style="min-height:300px"><div class="empty-icon">V</div><p>Run your first analysis to start tracking progress.</p></div>`:''}
+    </div>
+  `
+  if(count)setTimeout(()=>drawHexagon(phaseAvgs,phaseLabels),50)
+}
+
+function drawHexagon(avgs,labels){
+  const svg=document.getElementById('hexSvg');if(!svg)return
+  const cx=110,cy=110,maxR=82,angles=[-90,-30,30,90,150,210]
+  function pt(deg,val){const r=(val/100)*maxR,a=deg*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)]}
+  function hexPt(deg,r){const a=deg*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)]}
+  let html=''
+  for(const pct of[25,50,75,100]){const pts=angles.map(a=>hexPt(a,maxR*pct/100)).map(p=>p.join(',')).join(' ');html+=`<polygon points="${pts}" fill="none" stroke="rgba(15,27,45,.08)" stroke-width="1"/>`}
+  angles.forEach(a=>{const[x,y]=hexPt(a,maxR);html+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(15,27,45,.10)" stroke-width="1"/>`})
+  const dataPts=avgs.map((v,i)=>pt(angles[i],Math.max(v,8))).map(p=>p.join(',')).join(' ')
+  html+=`<polygon points="${dataPts}" fill="rgba(139,105,20,.18)" stroke="#8B6914" stroke-width="2"/>`
+  avgs.forEach((v,i)=>{
+    const[x,y]=pt(angles[i],Math.max(v,8));html+=`<circle cx="${x}" cy="${y}" r="4" fill="${v>0?'#8B6914':'rgba(15,27,45,.15)'}" stroke="#fff" stroke-width="1.5"/>`
+    const[lx,ly]=hexPt(angles[i],maxR+20),anchor=lx<cx-5?'end':lx>cx+5?'start':'middle'
+    html+=`<text x="${lx}" y="${ly+4}" text-anchor="${anchor}" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="${v>0?'#0F1B2D':'#9CA3AF'}">${labels[i]}</text>`
+  })
+  svg.innerHTML=html
+  const leg=document.getElementById('hexLegend')
+  if(leg)leg.innerHTML=avgs.map((v,i)=>v>0?`<span style="font-size:10px;color:var(--muted)">${labels[i]}: <b style="color:var(--navy)">${gradeFromPct(v)}</b></span>`:'').filter(Boolean).join('<span style="color:var(--border);margin:0 2px">·</span>')
+}
+
+// ===== EXPORT =====
+async function doExport(){
+  if(!lastRawText)return
+  const p=lp(),name=(p?.name||'sermon').replace(/[^a-zA-Z0-9 ]/g,'').trim().replace(/\s+/g,'-').toLowerCase()
+  if(dlNs){try{await dlNs.save({filename:`${name}-feedback.txt`,data:lastRawText});return}catch(e){if(e?.code==='declined')return}}
+  try{await navigator.clipboard.writeText(lastRawText);alert('Copied to clipboard.')}catch{alert('Export failed.')}
+}
+</script>
+</body>
+</html>
